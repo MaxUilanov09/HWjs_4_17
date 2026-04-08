@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-  max-width: 960px;
+  max-width: 1160px;
   margin: 20px auto;
   padding: 20px;
   background: white;
@@ -32,6 +32,14 @@ th, td {
 
 th {
   background-color: #f4f4f4;
+}
+
+th > button {
+    margin: 5px;
+}
+
+.students-button-delete {
+    background-color: #ff0000;
 }
 
 button {
