@@ -1,7 +1,7 @@
 const student_body = document.querySelector('#students-table-body');
 const form = document.querySelector('#add-student-form');
 
-const BASE_URL = 'https://maxuilanov09.github.io/HWjs_4_17/students';
+const BASE_URL = 'https://maxuilanov09.github.io/HWjs_4_17/students.json';
 // const BASE_URL = 'http://localhost:1235/students';
 
 let editFlag = false;
