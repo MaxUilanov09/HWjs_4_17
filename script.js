@@ -10,7 +10,7 @@ let editID = -1;
 function getStudents() {
     fetch(BASE_URL)
         .then(res => res.json())
-        .then(data => renderStudents(data));
+        .then(data => renderStudents(data.students));
 }
 
 function renderStudents(students) {
@@ -99,9 +99,9 @@ function editStudent(id) {
     editFlag = true;
     editID = id;
     document.querySelector('#Add_button').textContent = 'Оновити студента';
-    fetch(BASE_URL + `/${id}`)
+    fetch(BASE_URL)
         .then(res => res.json())
-        .then(data => setData(data));
+        .then(data => setData(data.students.find(obj => obj.id === editID)));
 }
 
 function updateStudent(id) {
