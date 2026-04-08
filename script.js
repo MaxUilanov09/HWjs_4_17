@@ -1,8 +1,9 @@
 const student_body = document.querySelector('#students-table-body');
 const form = document.querySelector('#add-student-form');
 
-const BASE_URL = 'https://maxuilanov09.github.io/HWjs_4_17/students.json';
-// const BASE_URL = 'http://localhost:1235/students';
+const BASE_URL = 'http://localhost:1235/students'; 
+
+// run 'npm run server' and then 'live server' to work
 
 let editFlag = false;
 let editID = -1;
@@ -10,7 +11,7 @@ let editID = -1;
 function getStudents() {
     fetch(BASE_URL)
         .then(res => res.json())
-        .then(data => renderStudents(data.students));
+        .then(data => renderStudents(data));
 }
 
 function renderStudents(students) {
@@ -99,9 +100,9 @@ function editStudent(id) {
     editFlag = true;
     editID = id;
     document.querySelector('#Add_button').textContent = 'Оновити студента';
-    fetch(BASE_URL)
+    fetch(BASE_URL + `/${id}`)
         .then(res => res.json())
-        .then(data => setData(data.students.find(obj => obj.id === editID)));
+        .then(data => setData(data));
 }
 
 function updateStudent(id) {
