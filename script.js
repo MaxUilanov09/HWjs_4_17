@@ -1,11 +1,12 @@
+const student_body = document.querySelector('#students-table-body');
+
 function getStudents() {
     const data = fetch('https://maxuilanov09.github.io/HWjs_4_17/students.json')
         .then(res => res.json())
-    console.log('c', data)
+        .then(data => renderStudents(data.students));
+    console.log('c', data);
     return data;
 }
-
-console.log('a', getStudents().then(x => console.log('b', x)));
 
 function renderStudents(students) {
     students.forEach(Obj => {
@@ -18,10 +19,10 @@ function renderStudents(students) {
             <th>${Obj.skills}</th>
             <th>${Obj.email}</th>
             <th>${Obj.isEnrolled}</th>
-            <th>${Obj}</th>
+            <th>-+-</th>
         </tr>
         `;
-
+        student_body.innerHTML += markup;
     })
 }
 
