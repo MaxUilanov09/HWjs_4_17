@@ -1,16 +1,16 @@
 const student_body = document.querySelector('#students-table-body');
 const form = document.querySelector('#add-student-form');
 
+let editFlag = false;
+
 function getStudents() {
-    const dataS = fetch('https://maxuilanov09.github.io/HWjs_4_17/students.json')
+    fetch('https://maxuilanov09.github.io/HWjs_4_17/students.json')
         .then(res => res.json())
-        .then(data => renderStudents(data.students))
-        .then(data => {return data.students});
-    console.log('c', dataS);
-    return dataS;
+        .then(data => renderStudents(data.students));
 }
 
 function renderStudents(students) {
+    console.log(students);
     students.forEach(Obj => {
         let markup = `
         <tr>
@@ -28,15 +28,38 @@ function renderStudents(students) {
     })
 }
 
-function addStudent() {
-    let dataObj = {}
+function getData() {
+    let dataObj = {};
     Array(...form.children).forEach(elem => {
-        console.log([elem, elem.children.length]);
         if (elem.children.length !== 0) {
-            dataObj[elem.id] = elem.firstChild.value
+            dataObj[elem.children.item(0).id] = (elem.children.item(0).id === 'isEnrolled') ? elem.children.item(0).checked : elem.children.item(0).value
+            if (elem.children.item(0).id === 'isEnrolled') {
+                elem.children.item(0).checked = false;
+            }
+            else {
+                elem.children.item(0).value = '';
+            }
         }
     });
-    console.log('dataObj', dataObj);
+    return dataObj;
+}
+
+function setData(Obj) {
+    console.log('o', Obj);
+    Array(...form.children).forEach(elem => {
+        if (elem.children.length !== 0) {
+            if (elem.children.item(0).id === 'isEnrolled') {
+                elem.children.item(0).checked = Obj[elem.children.item(0).id];
+            }
+            else {
+                elem.children.item(0).value = Obj[elem.children.item(0).id];
+            }
+        }
+    });
+}
+
+function addStudent() {
+    let dataObj = getData();
     fetch('https://maxuilanov09.github.io/HWjs_4_17/students.json', {
         method: "POST",
         headers: {
@@ -47,8 +70,24 @@ function addStudent() {
     getStudents();
 }
 
-function updateStudent(id) {
+function editStudent(id) {
+    editFlag = true;
+    fetch(`https://maxuilanov09.github.io/HWjs_4_17/students.json/${id}`)
+        .then(res => res.json())
+        .then(data => setData(data));
+}
 
+function updateStudent(id) {
+    let dataObj = getData();
+    console.log('dataObj', dataObj);
+    fetch(`https://maxuilanov09.github.io/HWjs_4_17/students.json/${id}`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataObj)
+    });
+    getStudents();
 }
 
 function deleteStudent(id) {
