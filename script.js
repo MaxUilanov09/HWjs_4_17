@@ -8,118 +8,147 @@ const BASE_URL = 'http://localhost:1235/students';
 let editFlag = false;
 let editID = -1;
 
-function getStudents() {
-    fetch(BASE_URL)
-        .then(res => res.json())
-        .then(data => renderStudents(data));
+async function getStudents() {
+    try {
+        const res = await fetch(BASE_URL)
+        const data = await res.json();
+        renderStudents(data);
+    } catch (error) {
+        alert("Can't get the student data\nTry again later");
+    }
 }
 
-function renderStudents(students) {
-    console.log(students);
-    student_body.innerHTML = '';
-    students.forEach(Obj => {
-        let markup = `
-        <tr>
-            <th>${Obj.id}</th>
-            <th>${Obj.name}</th>
-            <th>${Obj.age}</th>
-            <th>${Obj.course}</th>
-            <th>${Obj.skills}</th>
-            <th>${Obj.email}</th>
-            <th>${Obj.isEnrolled}</th>
-            <th>
-                <button type="button" data-id="${Obj.id}" class="students-button-delete">Видалити</button>
-                <button type="button" data-id="${Obj.id}" class="students-button-edit">Оновити</button>
-            </th>
-        </tr>
-        `;
-        student_body.innerHTML += markup;
-    });
-    document.querySelectorAll('.students-button-delete').forEach(x => {
-        x.addEventListener('click', () => {
-            deleteStudent(x.dataset.id);
+async function renderStudents(students) {
+    try {
+        student_body.innerHTML = '';
+        students.forEach(Obj => {
+            let markup = `
+            <tr>
+                <th>${Obj.id}</th>
+                <th>${Obj.name}</th>
+                <th>${Obj.age}</th>
+                <th>${Obj.course}</th>
+                <th>${Obj.skills}</th>
+                <th>${Obj.email}</th>
+                <th>${Obj.isEnrolled}</th>
+                <th>
+                    <button type="button" data-id="${Obj.id}" class="students-button-delete">Видалити</button>
+                    <button type="button" data-id="${Obj.id}" class="students-button-edit">Оновити</button>
+                </th>
+            </tr>
+            `;
+            student_body.innerHTML += markup;
         });
-    });
-    document.querySelectorAll('.students-button-edit').forEach(x => {
-        x.addEventListener('click', () => {
-            editStudent(x.dataset.id);
+        document.querySelectorAll('.students-button-delete').forEach(x => {
+            x.addEventListener('click', () => {
+                deleteStudent(x.dataset.id);
+            });
         });
-    });
+        document.querySelectorAll('.students-button-edit').forEach(x => {
+            x.addEventListener('click', () => {
+                editStudent(x.dataset.id);
+            });
+        });
+    } catch (error) {
+        alert("Can't render students\nTry again later");
+    }
 }
 
-function eraseData() {
-    Array(...form.children).forEach(elem => {
-        if (elem.children.length !== 0) {
-            if (elem.children.item(0).id === 'isEnrolled') {
-                elem.children.item(0).checked = false;
+async function eraseData() {
+    try {
+        Array(...form.children).forEach(elem => {
+            if (elem.children.length !== 0) {
+                if (elem.children.item(0).id === 'isEnrolled') {
+                    elem.children.item(0).checked = false;
+                }
+                else {
+                    elem.children.item(0).value = '';
+                }
             }
-            else {
-                elem.children.item(0).value = '';
-            }
-        }
-    });
+        });
+    } catch (error) {
+        alert("Can't remove input data\nPlease reload the page");
+    }
 }
 
-function getData() {
+async function getData() {
     let dataObj = {};
-    Array(...form.children).forEach(elem => {
-        if (elem.children.length !== 0) {
-            dataObj[elem.children.item(0).id] = (elem.children.item(0).id === 'isEnrolled') ? elem.children.item(0).checked : elem.children.item(0).value
-        }
-    });
+    try {
+        Array(...form.children).forEach(elem => {
+            if (elem.children.length !== 0) {
+                dataObj[elem.children.item(0).id] = (elem.children.item(0).id === 'isEnrolled') ? elem.children.item(0).checked : elem.children.item(0).value
+            }
+        });
+    } catch (error) {
+        alert("Can't get the data of the student\nTry again later");
+    }
     return dataObj;
 }
 
-function setData(Obj) {
-    console.log('o', Obj);
-    Array(...form.children).forEach(elem => {
-        if (elem.children.length !== 0) {
-            if (elem.children.item(0).id === 'isEnrolled') {
-                elem.children.item(0).checked = Obj[elem.children.item(0).id];
+async function setData(Obj) {
+    try {
+        Array(...form.children).forEach(elem => {
+            if (elem.children.length !== 0) {
+                if (elem.children.item(0).id === 'isEnrolled') {
+                    elem.children.item(0).checked = Obj[elem.children.item(0).id];
+                }
+                else {
+                    elem.children.item(0).value = Obj[elem.children.item(0).id];
+                }
             }
-            else {
-                elem.children.item(0).value = Obj[elem.children.item(0).id];
-            }
-        }
-    });
+        });
+    } catch (error) {
+        alert("Can't set the student data for editing\nTry again later");
+    }
 }
 
-function addStudent() {
-    let dataObj = getData();
-    fetch(BASE_URL, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataObj)
-    });
-    getStudents();
+async function addStudent() {
+    let dataObj = await getData();
+    try {
+        fetch(BASE_URL, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataObj)
+        });
+        getStudents();
+    } catch (error) {
+        alert("Can't add the student to the server\nPlease try again later");
+    }
 }
 
-function editStudent(id) {
-    editFlag = true;
-    editID = id;
-    document.querySelector('#Add_button').textContent = 'Оновити студента';
-    fetch(BASE_URL + `/${id}`)
-        .then(res => res.json())
-        .then(data => setData(data));
+async function editStudent(id) {
+    try {
+        editFlag = true;
+        editID = id;
+        document.querySelector('#Add_button').textContent = 'Оновити студента';
+        const res = await fetch(BASE_URL + `/${id}`)
+        const data = await res.json();
+        setData(data);
+    } catch (error) {
+        alert("Can't edit the student data\nPlease try again later");
+    }
 }
 
-function updateStudent(id) {
-    let dataObj = getData();
-    console.log('dataObj', dataObj);
-    fetch(BASE_URL + `/${id}`, {
-        method: "PUT",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataObj)
-    });
-    getStudents();
-    eraseData();
-    editFlag = false;
-    editID = -1;
-    document.querySelector('#Add_button').textContent = 'Додати студента';
+async function updateStudent(id) {
+    let dataObj = await getData();
+    try {
+        fetch(BASE_URL + `/${id}`, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataObj)
+        });
+        getStudents();
+        eraseData();
+        editFlag = false;
+        editID = -1;
+        document.querySelector('#Add_button').textContent = 'Додати студента';
+    } catch (error) {
+        alert("Can't update the student data\nPlease try again later");
+    }
 }
 
 function buttonFunc() {
@@ -131,11 +160,15 @@ function buttonFunc() {
     }
 }
 
-function deleteStudent(id) {
-    fetch(BASE_URL + `/${id}`, {
-        method: "DELETE",
-    });
-    getStudents();
+async function deleteStudent(id) {
+    try {
+        fetch(BASE_URL + `/${id}`, {
+            method: "DELETE",
+        });
+        getStudents();
+    } catch (error) {
+        alert("Can't delete the student data\nPlease try again");
+    }
 }
 
 form.addEventListener('submit', (ev) => {
